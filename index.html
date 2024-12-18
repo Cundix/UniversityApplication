@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI University Application Optimizer</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f4f9; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); width: 100%; max-width: 500px; }
+        h1 { text-align: center; color: #333; }
+        label { font-weight: bold; display: block; margin-top: 10px; }
+        input, textarea, button { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; font-size: 1em; }
+        button { background-color: #4CAF50; color: white; border: none; cursor: pointer; margin-top: 15px; }
+        button:hover { background-color: #45a049; }
+        .output { margin-top: 20px; padding: 15px; background: #e8f5e9; border: 1px solid #4CAF50; border-radius: 5px; display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>University Application Optimizer</h1>
+        <form id="applicationForm">
+            <label for="name">Full Name:</label>
+            <input type="text" id="name" placeholder="Enter your full name" required>
+
+            <label for="age">Age:</label>
+            <input type="number" id="age" placeholder="Enter your age" required>
+
+            <label for="education">Education Background:</label>
+            <textarea id="education" rows="3" placeholder="Briefly describe your education"></textarea>
+
+            <label for="activities">Extracurricular Activities:</label>
+            <textarea id="activities" rows="3" placeholder="List your activities"></textarea>
+
+            <label for="statement">Personal Statement:</label>
+            <textarea id="statement" rows="4" placeholder="Write your motivation"></textarea>
+
+            <label for="university">Target University/Field of Study:</label>
+            <input type="text" id="university" placeholder="Example: Computer Science at Harvard" required>
+
+            <button type="button" onclick="generateApplication()">Generate Application</button>
+        </form>
+        <div id="output" class="output">
+            <h3>Generated Application:</h3>
+            <div id="applicationResult"></div>
+        </div>
+    </div>
+
+    <script>
+        async function generateApplication() {
+            const name = document.getElementById('name').value;
+            const age = document.getElementById('age').value;
+            const education = document.getElementById('education').value;
+            const activities = document.getElementById('activities').value;
+            const statement = document.getElementById('statement').value;
+            const university = document.getElementById('university').value;
+
+            if (!name || !age || !university) {
+                alert("Please fill in the required fields.");
+                return;
+            }
+
+            const prompt = `Generate a university application letter for ${name}, aged ${age}, targeting ${university}. Their education background is: ${education}. They have been involved in the following activities: ${activities}. Personal motivation: ${statement}.`;
+
+            try {
+                const response = await fetch("http://localhost:3000/generate-application", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ prompt })
+                });
+
+                const data = await response.json();
+
+                if (data.applicationText) {
+                    document.getElementById('applicationResult').innerText = data.applicationText;
+                    document.getElementById('output').style.display = 'block';
+                } else {
+                    alert("Failed to generate application.");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("An error occurred. Please try again.");
+            }
+        }
+    </script>
+</body>
+</html>
